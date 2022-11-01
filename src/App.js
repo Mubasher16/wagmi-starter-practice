@@ -1,25 +1,42 @@
-import logo from './logo.svg';
-import './App.css';
+import {
+  WagmiConfig,
+  createClient,
+  defaultChains,
+  configureChains,
+  chain
+ } from 'wagmi'
+ import { infuraProvider } from 'wagmi/providers/infura'
+ import { publicProvider } from 'wagmi/providers/public'
+ import Profile from './profile'
+ import SendTx from './connect'
+ import { MetaMaskConnector } from 'wagmi/connectors/metaMask'
+import SendTxn from './write'
 
-function App() {
+ 
+ // Configure chains & providers with the Alchemy provider.
+ // Two popular providers are Alchemy (alchemy.com) and Infura (infura.io)
+ const { chains, provider, webSocketProvider } = configureChains([chain.goerli],
+  [infuraProvider({ apiKey: '2b2b802ce8414591a6c76a30cf192ad3' })],
+)
+ 
+ // Set up client
+ const client = createClient({
+  autoConnect: true,
+  connectors: [
+  new MetaMaskConnector({ chains }),
+  ],
+  provider,
+  webSocketProvider,
+ })
+ 
+ // Pass client to React Context Provider
+ function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
-
-export default App;
+  <WagmiConfig client={client}>
+  <Profile />
+  <SendTxn/>
+  <SendTx/>
+  </WagmiConfig>
+  )
+ }
+export default App; 
